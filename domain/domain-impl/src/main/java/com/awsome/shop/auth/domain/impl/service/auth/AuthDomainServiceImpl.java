@@ -2,6 +2,7 @@ package com.awsome.shop.auth.domain.impl.service.auth;
 
 import com.awsome.shop.auth.common.enums.AuthErrorCode;
 import com.awsome.shop.auth.common.exception.BusinessException;
+import com.awsome.shop.auth.domain.model.auth.TokenValidationResult;
 import com.awsome.shop.auth.domain.model.user.UserEntity;
 import com.awsome.shop.auth.domain.service.auth.AuthDomainService;
 import com.awsome.shop.auth.infrastructure.cache.api.service.TokenCacheService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 认证领域服务实现
@@ -23,6 +25,7 @@ public class AuthDomainServiceImpl implements AuthDomainService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final TokenCacheService tokenCacheService;
+    private final EmailDomainValidator emailDomainValidator;
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -31,6 +34,35 @@ public class AuthDomainServiceImpl implements AuthDomainService {
 
     @Value("${security.login.lock-duration:1800}")
     private long lockDurationSeconds;
+
+    @Override
+    @Transactional
+    public UserEntity register(String username, String rawPassword, String email, String nickname) {
+        // FR-A2 企业邮箱域名白名单
+        if (!emailDomainValidator.isAllowed(email)) {
+            throw new BusinessException(AuthErrorCode.EMAIL_DOMAIN_NOT_ALLOWED);
+        }
+        // 唯一性校验
+        if (userRepository.findByUsername(username) != null) {
+            throw new BusinessException(AuthErrorCode.USERNAME_EXISTS);
+        }
+        if (userRepository.findByEmail(email) != null) {
+            throw new BusinessException(AuthErrorCode.EMAIL_EXISTS);
+        }
+
+        // FR-A4 bcrypt 加密 + FR-A5 默认角色 EMPLOYEE
+        UserEntity user = new UserEntity();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPasswordHash(passwordEncoder.encode(rawPassword));
+        user.setNickname(nickname);
+        user.setRole("EMPLOYEE");
+        user.setStatus("ACTIVE");
+        user.setFailedLoginAttempts(0);
+
+        userRepository.save(user);
+        return user;
+    }
 
     @Override
     public UserEntity login(String username, String password) {
@@ -77,5 +109,22 @@ public class AuthDomainServiceImpl implements AuthDomainService {
         if (token != null && jwtService.validateToken(token)) {
             tokenCacheService.addToBlacklist(token, jwtService.getExpirationSeconds());
         }
+    }
+
+    @Override
+    public TokenValidationResult validateToken(String token) {
+        if (token == null || token.isBlank()) {
+            return TokenValidationResult.failure(AuthErrorCode.INVALID_TOKEN.getMessage());
+        }
+        if (!jwtService.validateToken(token)) {
+            return TokenValidationResult.failure(AuthErrorCode.INVALID_TOKEN.getMessage());
+        }
+        // 已登出（黑名单）的令牌视为无效
+        if (tokenCacheService.isBlacklisted(token)) {
+            return TokenValidationResult.failure(AuthErrorCode.INVALID_TOKEN.getMessage());
+        }
+        Long userId = jwtService.getUserIdFromToken(token);
+        String role = jwtService.getRoleFromToken(token);
+        return TokenValidationResult.success(userId, role);
     }
 }

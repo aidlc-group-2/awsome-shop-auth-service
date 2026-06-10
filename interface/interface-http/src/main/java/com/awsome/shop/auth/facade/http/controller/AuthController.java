@@ -2,6 +2,8 @@ package com.awsome.shop.auth.facade.http.controller;
 
 import com.awsome.shop.auth.application.api.dto.auth.LoginRequest;
 import com.awsome.shop.auth.application.api.dto.auth.LoginResponse;
+import com.awsome.shop.auth.application.api.dto.auth.RegisterRequest;
+import com.awsome.shop.auth.application.api.dto.auth.RegisterResponse;
 import com.awsome.shop.auth.application.api.service.auth.AuthApplicationService;
 import com.awsome.shop.auth.common.result.Result;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +22,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthApplicationService authApplicationService;
+
+    @Operation(summary = "用户注册")
+    @PostMapping("/public/auth/register")
+    public Result<RegisterResponse> register(@RequestBody @Valid RegisterRequest request) {
+        return Result.success(authApplicationService.register(request));
+    }
 
     @Operation(summary = "用户登录")
     @PostMapping("/public/auth/login")

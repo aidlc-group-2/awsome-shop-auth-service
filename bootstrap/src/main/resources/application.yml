@@ -32,7 +32,7 @@ spring:
     ignore-migration-patterns: "*:missing,*:future"
 
 server:
-  port: 8080
+  port: 8001
 
 # MyBatis-Plus 配置
 mybatis-plus:
@@ -63,3 +63,16 @@ management:
 
 # 说明: 本文件包含所有环境共享的配置
 # 环境特定配置请在对应的 application-{profile}.yml 中覆盖
+
+# Shop 业务配置（认证服务）
+shop:
+  auth:
+    email:
+      # FR-A2 企业邮箱注册白名单（逗号分隔），非白名单域名拒绝注册
+      allowed-domains: amazon.com,example.com
+  points:
+    # FR-A6 入职奖励积分发放（WORKAROUND：积分服务 Unit4 就绪前默认关闭，详见 docs/IMPLEMENTATION_NOTES.md）
+    onboarding:
+      enabled: false
+      base-url: http://localhost:8003
+      timeout: 5s

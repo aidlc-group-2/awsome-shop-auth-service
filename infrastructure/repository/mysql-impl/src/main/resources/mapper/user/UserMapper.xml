@@ -5,7 +5,7 @@
 
     <!-- 分页查询用户列表 -->
     <select id="selectPage" resultType="com.awsome.shop.auth.repository.mysql.po.user.UserPO">
-        SELECT id, username, password_hash, nickname, role, status,
+        SELECT id, username, email, password_hash, nickname, role, status,
                failed_login_attempts, lock_expired_at, last_login_at,
                created_at, updated_at, created_by, updated_by, deleted, version
         FROM user

@@ -32,6 +32,14 @@ public interface JwtService {
     String getUsernameFromToken(String token);
 
     /**
+     * 从 Token 中提取角色
+     *
+     * @param token JWT Token
+     * @return 角色
+     */
+    String getRoleFromToken(String token);
+
+    /**
      * 验证 Token 是否有效
      *
      * @param token JWT Token

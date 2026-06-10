@@ -31,6 +31,20 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public UserEntity findByEmail(String email) {
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserPO::getEmail, email);
+        UserPO po = userMapper.selectOne(wrapper);
+        return po == null ? null : toEntity(po);
+    }
+
+    @Override
+    public UserEntity findById(Long id) {
+        UserPO po = userMapper.selectById(id);
+        return po == null ? null : toEntity(po);
+    }
+
+    @Override
     public void save(UserEntity entity) {
         UserPO po = toPO(entity);
         userMapper.insert(po);
@@ -60,6 +74,7 @@ public class UserRepositoryImpl implements UserRepository {
         UserEntity entity = new UserEntity();
         entity.setId(po.getId());
         entity.setUsername(po.getUsername());
+        entity.setEmail(po.getEmail());
         entity.setPasswordHash(po.getPasswordHash());
         entity.setNickname(po.getNickname());
         entity.setRole(po.getRole());
@@ -76,6 +91,7 @@ public class UserRepositoryImpl implements UserRepository {
         UserPO po = new UserPO();
         po.setId(entity.getId());
         po.setUsername(entity.getUsername());
+        po.setEmail(entity.getEmail());
         po.setPasswordHash(entity.getPasswordHash());
         po.setNickname(entity.getNickname());
         po.setRole(entity.getRole());

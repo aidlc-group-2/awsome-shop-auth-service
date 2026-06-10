@@ -1,6 +1,8 @@
 package com.awsome.shop.auth.facade.http.controller;
 
 import com.awsome.shop.auth.application.api.dto.user.UserDTO;
+import com.awsome.shop.auth.application.api.dto.user.request.ChangeRoleRequest;
+import com.awsome.shop.auth.application.api.dto.user.request.GetUserRequest;
 import com.awsome.shop.auth.application.api.dto.user.request.ListUserRequest;
 import com.awsome.shop.auth.application.api.service.user.UserApplicationService;
 import com.awsome.shop.auth.common.dto.PageResult;
@@ -29,5 +31,17 @@ public class UserController {
     @PostMapping("/public/auth/user/list")
     public Result<PageResult<UserDTO>> list(@RequestBody @Valid ListUserRequest request) {
         return Result.success(userApplicationService.list(request));
+    }
+
+    @Operation(summary = "用户详情查询（管理员）")
+    @PostMapping("/auth/user/detail")
+    public Result<UserDTO> getUser(@RequestBody @Valid GetUserRequest request) {
+        return Result.success(userApplicationService.getUser(request));
+    }
+
+    @Operation(summary = "变更用户角色（管理员）")
+    @PostMapping("/auth/user/role")
+    public Result<UserDTO> changeRole(@RequestBody @Valid ChangeRoleRequest request) {
+        return Result.success(userApplicationService.changeRole(request));
     }
 }

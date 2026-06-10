@@ -10,6 +10,10 @@ public interface UserRepository {
 
     UserEntity findByUsername(String username);
 
+    UserEntity findByEmail(String email);
+
+    UserEntity findById(Long id);
+
     void save(UserEntity entity);
 
     void update(UserEntity entity);

@@ -1,6 +1,8 @@
 package com.awsome.shop.auth.application.impl.service.user;
 
 import com.awsome.shop.auth.application.api.dto.user.UserDTO;
+import com.awsome.shop.auth.application.api.dto.user.request.ChangeRoleRequest;
+import com.awsome.shop.auth.application.api.dto.user.request.GetUserRequest;
 import com.awsome.shop.auth.application.api.dto.user.request.ListUserRequest;
 import com.awsome.shop.auth.application.api.service.user.UserApplicationService;
 import com.awsome.shop.auth.common.dto.PageResult;
@@ -28,10 +30,21 @@ public class UserApplicationServiceImpl implements UserApplicationService {
         return page.convert(this::toDTO);
     }
 
+    @Override
+    public UserDTO getUser(GetUserRequest request) {
+        return toDTO(userDomainService.getById(request.getUserId()));
+    }
+
+    @Override
+    public UserDTO changeRole(ChangeRoleRequest request) {
+        return toDTO(userDomainService.changeRole(request.getUserId(), request.getRole()));
+    }
+
     private UserDTO toDTO(UserEntity entity) {
         UserDTO dto = new UserDTO();
         dto.setId(entity.getId());
         dto.setUsername(entity.getUsername());
+        dto.setEmail(entity.getEmail());
         dto.setNickname(entity.getNickname());
         dto.setRole(entity.getRole());
         dto.setStatus(entity.getStatus());
