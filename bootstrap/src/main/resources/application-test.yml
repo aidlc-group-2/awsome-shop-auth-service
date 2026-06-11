@@ -7,6 +7,9 @@
 # - 测试环境数据库/Redis 连接信息
 
 spring:
+  # Flyway：非生产环境额外加载 db/seed 种子账户
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed
   # Redis 配置
   data:
     redis:

@@ -13,6 +13,9 @@ server:
 # - Druid 监控: 启用 StatViewServlet
 
 spring:
+  # Flyway：非生产环境额外加载 db/seed 种子账户（admin/employee 弱口令仅限本地）
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed
   # Redis 配置
   data:
     redis:

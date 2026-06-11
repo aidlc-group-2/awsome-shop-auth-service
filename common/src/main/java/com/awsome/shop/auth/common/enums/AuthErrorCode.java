@@ -18,7 +18,8 @@ public enum AuthErrorCode implements ErrorCode {
     USERNAME_EXISTS("CONFLICT_001", "用户名已存在"),
     EMAIL_EXISTS("CONFLICT_002", "邮箱已被注册"),
     EMAIL_DOMAIN_NOT_ALLOWED("PARAM_101", "邮箱域名不在允许范围内"),
-    INVALID_ROLE("PARAM_102", "角色取值非法，仅支持 EMPLOYEE/ADMIN");
+    INVALID_ROLE("PARAM_102", "角色取值非法，仅支持 EMPLOYEE/ADMIN"),
+    ADMIN_REQUIRED("AUTHZ_001", "需要管理员权限");
 
     private final String code;
     private final String message;

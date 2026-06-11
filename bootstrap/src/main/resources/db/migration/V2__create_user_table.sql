@@ -18,10 +18,6 @@ CREATE TABLE `user` (
     UNIQUE INDEX `uk_username` (`username`, `deleted`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '用户表';
 
--- 插入默认管理员账户 (密码: admin123，使用 BCrypt 加密)
-INSERT INTO `user` (`username`, `password_hash`, `nickname`, `role`, `status`)
-VALUES ('admin', '$2b$10$d9d1rsMTb5H08rbbOMB1xeYv4TyGqds/noBBHpgkAvV2AJNB2DzEW', '系统管理员', 'ADMIN', 'ACTIVE');
-
--- 插入默认员工账户 (密码: employee123，使用 BCrypt 加密)
-INSERT INTO `user` (`username`, `password_hash`, `nickname`, `role`, `status`)
-VALUES ('employee', '$2b$10$LICm.1cUM63/Fp/6elh8ZuG3vYRgnbjiGoTDRi944KnNVRuMuoX8m', '李明', 'EMPLOYEE', 'ACTIVE');
+-- 注意：默认管理员/员工种子账户已移出本迁移（原 admin/admin123、employee/employee123 为公开弱口令，
+-- 不应进入生产）。种子数据改放 db/seed，仅 local/dev/test/docker profile 加载，见各 profile 的
+-- spring.flyway.locations。生产管理员由运维流程创建并强制改密。
