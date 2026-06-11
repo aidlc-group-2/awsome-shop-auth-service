@@ -2,7 +2,7 @@
 # 容器化部署环境配置
 
 server:
-  port: 8001
+  port: 8081
 
 spring:
   # Redis 配置
